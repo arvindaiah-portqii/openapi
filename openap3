@@ -1,0 +1,3176 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "PredictSpring API",
+    "version": "1.0.0",
+    "description": "PredictString API Specification for Order Search",
+    "contact": {
+      "name": "PredictSpring Inc.",
+      "url": "https:www.predictspring.com",
+      "email": "contact@predictspring.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Order Management API",
+      "description": "PredictSpring Merchant API to perform creaate, search and retrieve orders from PredictSpring system"
+    }
+  ],
+  "paths": {
+    "/v1/oms/orderSearch": {
+      "post": {
+        "tags": [
+          "Order Management API"
+        ],
+        "summary": "OMS - Order Search",
+        "description": "Search orders",
+        "operationId": "searchOrders_1",
+        "parameters": [
+          {
+            "name": "PredictSpring-Secret",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderSearchResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/oms/order/details": {
+      "post": {
+        "tags": [
+          "Order Management API"
+        ],
+        "summary": "OMS - Get Order Details",
+        "description": "Get Order Details",
+        "operationId": "getOrderDetails",
+        "parameters": [
+          {
+            "name": "PredictSpring-Secret",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/GetCustomerOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerOrder"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GetCustomerOrderRequest": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "Order ID"
+          },
+          "removeReturnedItemsFromProductList": {
+            "type": "boolean",
+            "description": "Flag indicating if returned products are to be removed from the 'productList'"
+          },
+          "returnFullGiftCardNumber": {
+            "type": "boolean",
+            "description": "Flag indicating if full gift card numbers are to be returned"
+          },
+          "fulfillmentType": {
+            "type": "string",
+            "description": "Applies to split orders. Fulfillment type",
+            "enum": [
+              "IN_STORE",
+              "ONLINE",
+              "MIXED"
+            ]
+          },
+          "fetchCustomerProfile": {
+            "type": "boolean",
+            "description": "Flag indicating if customer profile object is to be retrieved or not"
+          },
+          "fetchPaymentDetails": {
+            "type": "boolean",
+            "description": "Flag indicating if payment details are to be retrieved or not"
+          },
+          "fetchRefundPaymentDetails": {
+            "type": "boolean",
+            "description": "Flag indicating if refund details are to be retrieved or not"
+          },
+          "updateOrderStatusBasedOnItemStatus": {
+            "type": "boolean",
+            "description": "Flag indicating if order status field in the returned order are to be set to FULFILLED if all the items in the order are FULFILLED. FULFILLED means customer is in possession of the item. Used to indicate if an order can be allowed to be modified or not"
+          },
+          "childOrderRetrieve": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OrderSearchResponse": {
+        "type": "object",
+        "properties": {
+          "errorMessage": {
+            "type": "string",
+            "description": "Generic field for error messages in case of errors from PredictSpring Platform."
+          },
+          "errorStackTrace": {
+            "type": "string",
+            "description": "Generic field for error stacktrace in case of errors from PredictSpring Platform in non-production environment."
+          },
+          "errorCode": {
+            "type": "string",
+            "description": "Generic field for short error code in case of errors from PredictSpring Platform in non-production environment."
+          },
+          "statusMessage": {
+            "type": "string",
+            "description": "Generic field for successful message from PredictSpring Platform. Used to return success message in case where there is no specific object to return.",
+            "default": "OK"
+          },
+          "statusCode": {
+            "type": "string",
+            "description": "Generic field for success code from PredictSpring Platform. Used to return success code in case where there is no specific object to return.",
+            "default": "SUCCESS"
+          },
+          "orderList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderSearchResponseEntry"
+            }
+          },
+          "error": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OrderSearchResponseEntry": {
+        "type": "object",
+        "properties": {
+          "orderID": {
+            "type": "string"
+          },
+          "storeID": {
+            "type": "string"
+          },
+          "billingName": {
+            "type": "string"
+          },
+          "emailID": {
+            "type": "string"
+          },
+          "total": {
+            "type": "number"
+          },
+          "orderDate": {
+            "type": "string"
+          },
+          "orderDateTimeStamp": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "imageLinks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "orderStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "orderType": {
+            "type": "string",
+            "enum": [
+              "STORE_PICKUP",
+              "STORE_FULFILLMENT",
+              "LAYAWAY"
+            ]
+          },
+          "bopisOrderStatus": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "isSplitCart": {
+            "type": "boolean"
+          },
+          "fulfillmentType": {
+            "type": "string",
+            "enum": [
+              "IN_STORE",
+              "ONLINE",
+              "MIXED"
+            ]
+          },
+          "parentOrderId": {
+            "type": "string"
+          },
+          "orderAttribution": {
+            "$ref": "#/components/schemas/OrderAttribution"
+          }
+        }
+      },
+      "BigDecimalRange": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "number",
+            "description": "From or starting filter criteria for amount/BigDecimal values",
+            "nullable": true,
+            "readOnly": true
+          },
+          "to": {
+            "type": "number",
+            "description": "To or ending filter criteria for amount/BigDecimal values",
+            "nullable": true
+          }
+        },
+        "description": "Find orders within this order total range"
+      },
+      "OrderSearchRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Customer first name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Customer last name"
+          },
+          "email": {
+            "type": "string",
+            "description": "Customer email address"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Order ID"
+          },
+          "postalCode": {
+            "type": "string",
+            "description": "Postal code or Zip code"
+          },
+          "start": {
+            "type": "integer",
+            "description": "Order search offset. Used for paginating across multiple orders",
+            "format": "int32",
+            "default": 0
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of orders to return. Used for paginating across multiple orders",
+            "format": "int32",
+            "default": 20
+          },
+          "bopisOrders": {
+            "type": "boolean",
+            "description": "Flag indicating if BOPIS orders should be searched"
+          },
+          "storeId": {
+            "type": "string",
+            "description": "Store ID. Find order placed in this store"
+          },
+          "customerId": {
+            "type": "string",
+            "description": "Customer ID. Find orders placed by this customer ID"
+          },
+          "storeOrderStatus": {
+            "type": "string",
+            "description": "Store Order Status. Find orders in this status. Applies to BOPIS/BOFIS orders"
+          },
+          "paymentCard": {
+            "$ref": "#/components/schemas/Card"
+          },
+          "productId": {
+            "type": "string",
+            "description": "Product ID. Find orders containing this product ID"
+          },
+          "searchForReturn": {
+            "type": "boolean",
+            "description": "DEPRECATED. Flag indicating if this search is for return purpose. Find only those orders eligible for returns.",
+            "deprecated": true
+          },
+          "storeAssociateId": {
+            "type": "string",
+            "description": "Store Associate ID. Find orders placed by specific store associate"
+          },
+          "storeRegisterId": {
+            "type": "string",
+            "description": "Store Register ID. Find orders placed from specific store register"
+          },
+          "orderTotal": {
+            "type": "number",
+            "description": "Order Total. Find orders having specific order total"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "Payment method. Find orders placed using specific payment method"
+          },
+          "amountRange": {
+            "$ref": "#/components/schemas/BigDecimalRange"
+          },
+          "orderDateTimeStampStart": {
+            "type": "integer",
+            "description": "Find orders placed on or after this timestamp - represented as milliseconds since epoch",
+            "format": "int64"
+          },
+          "orderDateTimeStampEnd": {
+            "type": "integer",
+            "description": "Find orders placed or or before this timestamp - represented as milliseconds since epoch",
+            "format": "int64"
+          },
+          "orderStatus": {
+            "type": "string",
+            "description": "Find orders having specific order status",
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "workbench": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CustomerOrder": {
+        "type": "object",
+        "properties": {
+          "errorMessage": {
+            "type": "string",
+            "description": "Generic field for error messages in case of errors from PredictSpring Platform."
+          },
+          "errorStackTrace": {
+            "type": "string",
+            "description": "Generic field for error stacktrace in case of errors from PredictSpring Platform in non-production environment."
+          },
+          "errorCode": {
+            "type": "string",
+            "description": "Generic field for short error code in case of errors from PredictSpring Platform in non-production environment."
+          },
+          "statusMessage": {
+            "type": "string",
+            "description": "Generic field for successful message from PredictSpring Platform. Used to return success message in case where there is no specific object to return.",
+            "default": "OK"
+          },
+          "statusCode": {
+            "type": "string",
+            "description": "Generic field for success code from PredictSpring Platform. Used to return success code in case where there is no specific object to return.",
+            "default": "SUCCESS"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Order identifier"
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Payment request identifier. Used only in case of orders with single credit card payment. Used while retrieving orders from PredictSpring and cannot be written to",
+            "nullable": true,
+            "readOnly": true
+          },
+          "orderStatus": {
+            "type": "string",
+            "description": "Order status.",
+            "nullable": true,
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "DEPRECATED - use orderStatus.",
+            "nullable": true,
+            "readOnly": true,
+            "deprecated": true,
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "bopisOrderStatus": {
+            "type": "string",
+            "description": "BOPIS/BOSS/BOFIS Order status. This is shared enum used for OrderStatus",
+            "nullable": true,
+            "readOnly": true,
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "orderType": {
+            "type": "string",
+            "description": "Type of order. Used in case of BOPIS (STORE_PICKUP) or BOFIS/BOSS (STORE_FULFILLMENT) orders.",
+            "nullable": true,
+            "enum": [
+              "STORE_PICKUP",
+              "STORE_FULFILLMENT",
+              "LAYAWAY"
+            ]
+          },
+          "creationDate": {
+            "type": "string",
+            "description": "DEPRECATED. Order creation date. String representation.",
+            "nullable": true,
+            "readOnly": true,
+            "deprecated": true
+          },
+          "email": {
+            "type": "string",
+            "description": "Customer Email ID",
+            "nullable": true
+          },
+          "productSubTotal": {
+            "type": "number",
+            "description": "Product sub total.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Order total.",
+            "nullable": true
+          },
+          "shippingSubTotal": {
+            "type": "number",
+            "description": "Shipping sub total",
+            "nullable": true
+          },
+          "shippingDiscount": {
+            "type": "number",
+            "description": "Shipping discount",
+            "nullable": true
+          },
+          "parentOrderId": {
+            "type": "string",
+            "description": "Parent order ID in case this order is part of a split/mixed order. For example, this order is IN_STORE order which is part of an order that had IN_STORE and ONLINE orders",
+            "nullable": true
+          },
+          "taxSubTotal": {
+            "type": "number",
+            "description": "Total tax amount for this order. This does not include any product price or shipping cost. It includes only the sum of taxes",
+            "nullable": true
+          },
+          "valueAddedTax": {
+            "type": "number",
+            "description": "Value added tax amount for this order",
+            "nullable": true
+          },
+          "orderSubTotal": {
+            "type": "number",
+            "description": "Order total excluding discounts, shipping costs and taxes",
+            "nullable": true
+          },
+          "paymentCard": {
+            "$ref": "#/components/schemas/Card"
+          },
+          "paymentCards": {
+            "type": "array",
+            "description": "DEPRECATED - Use tenders instead. Representation of list of credit cards used as payment for this order. While retrieving the order that has only one credit card payment, the card details will be populated as first entry in this field and same will be populated in the paymentCard field as well. In future, use tenders object",
+            "nullable": true,
+            "deprecated": true,
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            }
+          },
+          "tenders": {
+            "type": "array",
+            "description": "Representation of list of payments for this order. This tender includes cash object as well. While retrieving the order that has only one credit card payment, the card details will be populated as first entry in this field and same will be populated in the paymentCard field as well. In future, use tenders object",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/OrderPaymentDetail"
+            }
+          },
+          "shippingAddress": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "billingAddress": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "productList": {
+            "type": "array",
+            "description": "Products in this order. This list does not include the products that were returned",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          },
+          "orderProductList": {
+            "type": "array",
+            "description": "Products in this order with price adjustments. This list does not include the products that were returned",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/OrderProduct"
+            }
+          },
+          "returnProductList": {
+            "type": "array",
+            "description": "Products that were not yet returned",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ReturnedProduct"
+            }
+          },
+          "orderStatusText": {
+            "type": "string",
+            "description": "Order status text",
+            "nullable": true,
+            "readOnly": true
+          },
+          "discount": {
+            "type": "number",
+            "description": "Order discount amount",
+            "nullable": true
+          },
+          "giftWrapTotal": {
+            "type": "number",
+            "description": "Amount charged for gift wrap. Currently this field read only",
+            "nullable": true,
+            "readOnly": true
+          },
+          "env": {
+            "type": "string",
+            "description": "Field indicating the environment where the order is originating from. Set and used only while sending orders to external merchant systems via API.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "externalOrderId": {
+            "type": "string",
+            "description": "External Order reference ID in case order is captured externally with a different order ID.",
+            "nullable": true
+          },
+          "storeId": {
+            "type": "string",
+            "description": "In case of POS, Store ID where order is placed. In case of customer placing BOPIS order via consumer app, this field will have store ID from where order should be picked up from.",
+            "nullable": true
+          },
+          "storeAssociateId": {
+            "type": "string",
+            "description": "In case of POS orders, ID of store associate who placed the order.",
+            "nullable": true
+          },
+          "orderSource": {
+            "type": "string",
+            "description": "Fulfillment mode",
+            "nullable": true,
+            "enum": [
+              "DEFAULT",
+              "IN_STORE",
+              "POPUP_STORE",
+              "WEB",
+              "APP",
+              "OUTLET_STORE"
+            ]
+          },
+          "paymentSource": {
+            "type": "string",
+            "description": "Payment source.",
+            "nullable": true
+          },
+          "shippingMethodId": {
+            "type": "string",
+            "description": "Shipping method ID.",
+            "nullable": true
+          },
+          "displayOrderId": {
+            "type": "string",
+            "description": "Order ID to be shown to the user.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "signature": {
+            "type": "string",
+            "description": "Customer signature object. Base 64 encoded image. Used in case of BOPIS orders",
+            "nullable": true,
+            "readOnly": true
+          },
+          "installationId": {
+            "type": "string",
+            "description": "Device identifier which was used to place the order. It will default to EXTERNAL in case of orders originating from external systems and this field is not available",
+            "nullable": true,
+            "default": "EXTERNAL"
+          },
+          "lastDateToReturnTimeStamp": {
+            "type": "integer",
+            "description": "Last date to return. Represented as number of milliseconds since epoch",
+            "format": "int64",
+            "nullable": true
+          },
+          "taxRates": {
+            "type": "array",
+            "description": "Tax breakdown for this order",
+            "nullable": true,
+            "readOnly": true,
+            "items": {
+              "$ref": "#/components/schemas/OrderTaxRate"
+            }
+          },
+          "vatRates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderTaxRate"
+            }
+          },
+          "currency": {
+            "type": "string"
+          },
+          "shippingName": {
+            "type": "string",
+            "description": "DEPRECATED - use shipmentList. Shipping name. Used in case if all items of the orders are shipped together in shipment",
+            "nullable": true
+          },
+          "shippingDescription": {
+            "type": "string",
+            "description": "DEPRECATED - use shipmentList. Shipping description. Used in case if all items of the orders are shipped together in shipment",
+            "nullable": true
+          },
+          "shippingCarrier": {
+            "type": "string",
+            "description": "DEPRECATED - use shipmentList. Shipping carrier. Used in case if all items of the orders are shipped together in shipment",
+            "nullable": true
+          },
+          "shippingServiceLevel": {
+            "type": "string",
+            "description": "DEPRECATED - use shipmentList. Shipping service level. Used in case if all items of the orders are shipped together in shipment",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Customer phone number",
+            "nullable": true
+          },
+          "orderDate": {
+            "type": "integer",
+            "description": "Date when order was placed. Represented as number of milliseconds since epoch",
+            "format": "int64",
+            "nullable": true
+          },
+          "coupons": {
+            "type": "array",
+            "description": "List of coupon codes applied for this order",
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "description": "List of coupon codes applied for this order",
+              "nullable": true
+            }
+          },
+          "customerProfile": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "updateDate": {
+            "type": "integer",
+            "description": "Date when the order was last updated. Represented as number of milliseconds since epoch.",
+            "format": "int64",
+            "nullable": true,
+            "readOnly": true
+          },
+          "bopisOrderUpdateDate": {
+            "type": "integer",
+            "description": "Date when the BOPIS order was last updated. Represented as number of milliseconds since epoch.",
+            "format": "int64",
+            "nullable": true,
+            "readOnly": true
+          },
+          "promotionResponse": {
+            "type": "string",
+            "description": "Any raw response from promotion system.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "taxableAmount": {
+            "type": "number",
+            "description": "Taxable amount",
+            "nullable": true
+          },
+          "cashTotal": {
+            "type": "number",
+            "description": "DEPRECATED - User tenders property. Cash payment made for this order if any",
+            "nullable": true,
+            "deprecated": true
+          },
+          "cashPaymentTransactionId": {
+            "type": "string",
+            "description": "DEPRECATED - User tenders property. Cash payment transaction ID if any",
+            "nullable": true,
+            "deprecated": true
+          },
+          "cashPaymentId": {
+            "type": "string",
+            "description": "DEPRECATED - User tenders property. Cash payment ID if any",
+            "nullable": true,
+            "deprecated": true
+          },
+          "creationDateMillis": {
+            "type": "integer",
+            "description": "Order creation time, Represented as number of milliseconds since epoch. This field has higher precedence over orderDate creationDate fields while sending external orders into PredictSpring.",
+            "format": "int64",
+            "nullable": true
+          },
+          "fulfillmentType": {
+            "type": "string",
+            "description": "Order fulfillment type.",
+            "nullable": true,
+            "enum": [
+              "IN_STORE",
+              "ONLINE",
+              "MIXED"
+            ]
+          },
+          "children": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CustomerOrder"
+            },
+            "description": "Child orders in case of mixed mode orders.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes for this order if any.",
+            "nullable": true
+          },
+          "rewardAmount": {
+            "type": "number",
+            "description": "Reward amount applied to this order if any.",
+            "nullable": true
+          },
+          "transactionDiscountAmount": {
+            "type": "number",
+            "description": "Transaction discount applied to this order if any.",
+            "nullable": true
+          },
+          "transactionDiscountReason": {
+            "type": "string",
+            "description": "DEPRECATED - use 'reasons' instead. Reason for transaction discount applied to this order if any.",
+            "nullable": true,
+            "deprecated": true
+          },
+          "shipments": {
+            "type": "array",
+            "description": "Shipments related to this order if any.",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/OrderShipment"
+            }
+          },
+          "canReturn": {
+            "type": "boolean",
+            "description": "Flag indicating if this order can be returned.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "returnUrl": {
+            "type": "string",
+            "description": "Website URL in case customer wants to return this order and wants to get more information.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "cartId": {
+            "type": "string",
+            "description": "Cart ID related to this order if any.",
+            "nullable": true
+          },
+          "correlationId": {
+            "type": "string",
+            "description": "Correlation ID related to this order if any.",
+            "nullable": true,
+            "readOnly": true
+          },
+          "noReceiptReturns": {
+            "type": "boolean",
+            "description": "Flag indicating if this is an order returned without any receipt",
+            "nullable": true,
+            "readOnly": true
+          },
+          "failedReasonCode": {
+            "type": "string",
+            "description": "Failed order reason code corresponding to payment. It could have any of these values - CANCELED, PAYMENT_DECLINED, PAYMENT_REVERTED",
+            "nullable": true,
+            "enum": [
+              "CANCELED",
+              "PAYMENT_DECLINED",
+              "PAYMENT_REVERTED"
+            ]
+          },
+          "twoPhaseCommitReferenceId": {
+            "type": "string",
+            "description": "Two phase commit reference id, generarted during two phase processing",
+            "nullable": true
+          },
+          "hideReceiptOptions": {
+            "type": "boolean"
+          },
+          "orderAttribution": {
+            "$ref": "#/components/schemas/OrderAttribution"
+          },
+          "reasons": {
+            "type": "array",
+            "description": "List of reasons pertaining to the actions performed on the order. Eg. Reason details for discounts applied on order ",
+            "nullable": true,
+            "readOnly": true,
+            "items": {
+              "$ref": "#/components/schemas/Reason"
+            }
+          },
+          "productPriceAdjustments": {
+            "type": "array",
+            "description": "Convenience object that consolidates all item level price adjustments and presents at order level",
+            "items": {
+              "$ref": "#/components/schemas/ProductPriceAdjustment"
+            }
+          },
+          "error": {
+            "type": "boolean"
+          }
+        },
+        "description": "Object representing an Order. Fields marked as read only should not be used during order ingestion.\nEach order represents an In-store purchase order or endless aisle order or BOPIS order or BOFIS/BOSS orders. \nBOPIS items and BOFIS/BOSS items cannot be mixed together in a single order. \nBOPIS orders should have orderType set to STORE_PICKUP, fulfillmentMode (orderSource) set to APP or WEB, product level fulfillmentType to IN_STORE, product level itemStatus set to READY. BOFIS/BOSS orders should have orderType set to STORE_FULFILLMENT, fulfillmentMode (orderSource) set to APP or WEB, product level fulfillmentType to IN_STORE, product level itemStatus set to READY. ",
+        "nullable": true,
+        "readOnly": true
+      },
+      "OrderAttribution": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "Order Id",
+            "readOnly": true
+          },
+          "notificationId": {
+            "type": "string",
+            "description": "Notification sent corresponding to the order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "messageId": {
+            "type": "string",
+            "description": "Message triggered corresponding to the order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "geofenceId": {
+            "type": "string",
+            "description": "Geofence  id corresponding to the order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "branchId": {
+            "type": "string",
+            "description": "Branch  id corresponding to the order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "storeAreaLevel1Id": {
+            "type": "string",
+            "description": "Store Area level 1 corresponding to the order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "storeAreaLevel2Id": {
+            "type": "string",
+            "description": "Store Area level 2 corresponding to the order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "storeAreaLevel3Id": {
+            "type": "string",
+            "description": "Store Area level 3 corresponding to the order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "storeAreaLevel4Id": {
+            "type": "string",
+            "description": "Store Area level 4 corresponding to the order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "storeAreaLevel5Id": {
+            "type": "string",
+            "description": "Store Area level 5 corresponding to the order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "storeRegisterId": {
+            "type": "string",
+            "description": "Store register corresponding  to the order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "registerTransactionId": {
+            "type": "string",
+            "description": "Register transaction id corresponding  to the order",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "description": "Order attributions corresponding to this order ",
+        "nullable": true,
+        "readOnly": true
+      },
+      "Card": {
+        "type": "object",
+        "properties": {
+          "paymentId": {
+            "type": "string"
+          },
+          "cardOwner": {
+            "type": "string"
+          },
+          "cardType": {
+            "type": "string"
+          },
+          "cardNumber": {
+            "type": "string"
+          },
+          "cardCvc": {
+            "type": "string"
+          },
+          "cardExpirationMonth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cardExpirationYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rawCardType": {
+            "type": "string"
+          },
+          "billingAddressId": {
+            "type": "string"
+          },
+          "cardNickName": {
+            "type": "string"
+          },
+          "track1Data": {
+            "type": "string"
+          },
+          "track2Data": {
+            "type": "string"
+          },
+          "deviceId": {
+            "type": "string"
+          },
+          "authAmount": {
+            "type": "number"
+          },
+          "authCode": {
+            "type": "string"
+          },
+          "captureCode": {
+            "type": "string"
+          },
+          "cardToken": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "requestToken": {
+            "type": "string"
+          },
+          "encryptedCardNumber": {
+            "type": "string"
+          },
+          "encryptedCvv": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "transactionId": {
+            "type": "string"
+          },
+          "encryptedExpiryDate": {
+            "type": "string"
+          },
+          "receiptLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentReceiptLine"
+            }
+          },
+          "manualCardEntry": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OrderPaymentDetail": {
+        "type": "object",
+        "properties": {
+          "merchantId": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string"
+          },
+          "transactionId": {
+            "type": "string"
+          },
+          "paymentId": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "enum": [
+              "Cash",
+              "CreditCard",
+              "GiftCard",
+              "PLCC",
+              "Check",
+              "ACH",
+              "Miscellaneous",
+              "ApplePay",
+              "AndroidPay",
+              "Finance"
+            ]
+          },
+          "paymentDevice": {
+            "type": "string",
+            "enum": [
+              "Adyen",
+              "PayPal",
+              "Verifone",
+              "Square",
+              "CheckReader",
+              "NoReader",
+              "External",
+              "StoredCard",
+              "Stripe"
+            ]
+          },
+          "cardNumber": {
+            "type": "string"
+          },
+          "cardType": {
+            "type": "string"
+          },
+          "amountAuthorized": {
+            "type": "number"
+          },
+          "authorizationToken": {
+            "type": "string"
+          },
+          "authorizationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "captureToken": {
+            "type": "string"
+          },
+          "captureDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "addressLine1": {
+            "type": "string"
+          },
+          "addressLine2": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "alternateRequestId": {
+            "type": "string"
+          },
+          "requestToken": {
+            "type": "string"
+          },
+          "refundRequestId": {
+            "type": "string"
+          },
+          "refundDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "copiedFromOrderId": {
+            "type": "string"
+          },
+          "totalRefundedAmount": {
+            "type": "number"
+          },
+          "totalAmountCarriedOverForExchange": {
+            "type": "number"
+          },
+          "receiptLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentReceiptLine"
+            }
+          },
+          "paypalInvoiceId": {
+            "type": "string"
+          },
+          "paymentSequenceNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paymentDeviceId": {
+            "type": "string"
+          },
+          "rawPaymentPayload": {
+            "type": "string"
+          },
+          "routingNumber": {
+            "type": "string"
+          },
+          "accountNumber": {
+            "type": "string"
+          },
+          "checkNumber": {
+            "type": "string"
+          },
+          "personalIdType": {
+            "type": "string",
+            "enum": [
+              "DriversLicense",
+              "StateID",
+              "MilitaryID",
+              "Passport",
+              "StudentID",
+              "PermanentResidentID",
+              "TribalID",
+              "BusinessPhone"
+            ]
+          },
+          "personalIdIssuedBy": {
+            "type": "string"
+          },
+          "personalIdNumber": {
+            "type": "string"
+          },
+          "personalIdExpiryDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cardToken": {
+            "type": "string"
+          },
+          "cardExpirationMonth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cardExpirationYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "externalPaymentSystemId": {
+            "type": "string"
+          },
+          "externalPaymentReferenceId": {
+            "type": "string"
+          },
+          "paymentGatewayConfigId": {
+            "type": "string"
+          },
+          "checkType": {
+            "type": "string",
+            "enum": [
+              "Personal",
+              "Business"
+            ]
+          },
+          "manualAuthorizationCode": {
+            "type": "string"
+          },
+          "authorizationDateMillis": {
+            "type": "integer",
+            "format": "int64",
+            "writeOnly": true
+          },
+          "captureDateMillis": {
+            "type": "integer",
+            "format": "int64",
+            "writeOnly": true
+          },
+          "paymentMethodString": {
+            "type": "string"
+          }
+        },
+        "description": "Representation of list of payments for this order. This tender includes cash object as well. While retrieving the order that has only one credit card payment, the card details will be populated as first entry in this field and same will be populated in the paymentCard field as well. In future, use tenders object",
+        "nullable": true
+      },
+      "Address": {
+        "type": "object",
+        "properties": {
+          "locationId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "additionalName": {
+            "type": "string"
+          },
+          "streetAddress1": {
+            "type": "string"
+          },
+          "streetAddress2": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          }
+        },
+        "description": "Ship to store details"
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string"
+          },
+          "variantGroupId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "salesEventId": {
+            "type": "string"
+          },
+          "hasGiftBox": {
+            "type": "boolean"
+          },
+          "productTax": {
+            "$ref": "#/components/schemas/ProductTax"
+          },
+          "orderStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "tax": {
+            "type": "number"
+          },
+          "valueAddedTax": {
+            "type": "number"
+          },
+          "orderItemId": {
+            "type": "string"
+          },
+          "parentOrderItemId": {
+            "type": "string"
+          },
+          "adjustedPrice": {
+            "type": "number"
+          },
+          "adjustedQuantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productTaxCode": {
+            "type": "string"
+          },
+          "itemProratedPrice": {
+            "type": "number"
+          },
+          "imageURL": {
+            "type": "string"
+          },
+          "subTotal": {
+            "type": "number"
+          },
+          "discount": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "store": {
+            "$ref": "#/components/schemas/Store"
+          },
+          "orderStatusText": {
+            "type": "string"
+          },
+          "itemDiscountAmount": {
+            "type": "number"
+          },
+          "overriddenPrice": {
+            "type": "number"
+          },
+          "size": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "itemStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "returnedDateTimeStamp": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "returnedDate": {
+            "type": "string"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomField"
+            }
+          },
+          "taxClass": {
+            "type": "string"
+          },
+          "totalAdjustedPrice": {
+            "type": "number"
+          },
+          "totalTaxablePrice": {
+            "type": "number"
+          },
+          "totalAdditionalCharge": {
+            "type": "number"
+          },
+          "totalItemDiscount": {
+            "type": "number"
+          },
+          "additionalCharges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdditionalCharge"
+            }
+          },
+          "priceAfterOrderDiscount": {
+            "type": "number"
+          },
+          "gtin": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "fulfillmentType": {
+            "type": "string",
+            "enum": [
+              "IN_STORE",
+              "ONLINE",
+              "MIXED"
+            ]
+          },
+          "fulfillmentSubType": {
+            "type": "string",
+            "enum": [
+              "DEFAULT",
+              "BOSS",
+              "BOPIS",
+              "TRY_AT_STORE",
+              "PICKUP_LATER"
+            ]
+          },
+          "exchangedForProductId": {
+            "type": "string"
+          },
+          "payWithInstallment": {
+            "type": "boolean"
+          },
+          "installmentEligibility": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "salesAssociateId": {
+            "type": "string"
+          },
+          "onlineInventoryLabel": {
+            "type": "string"
+          },
+          "onlineInventory": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "returnsEligibility": {
+            "type": "string",
+            "enum": [
+              "ELIGIBLE_FOR_RETURNS",
+              "EXPIRED_RETURNS",
+              "CANNOT_BE_RETURNED"
+            ]
+          },
+          "cyoDetails": {
+            "$ref": "#/components/schemas/CyoDetails"
+          },
+          "epc": {
+            "type": "string"
+          },
+          "tlogCustomProductAttributes": {
+            "type": "string"
+          },
+          "priceOverrideReasonCode": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "priceOverrideReason": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "masterProductId": {
+            "type": "string"
+          },
+          "subProductsTotal": {
+            "type": "number"
+          },
+          "subProductsLabel": {
+            "type": "string"
+          },
+          "readyDate": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "subProducts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          },
+          "productClass": {
+            "type": "string"
+          },
+          "serialNumber": {
+            "type": "string"
+          },
+          "productCondition": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "USED",
+              "REFURBISHED"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "description": "List of reasons pertaining to the actions performed on the item. Eg. Reason for price override applied on the item or reason for returning the item ",
+            "nullable": true,
+            "readOnly": true,
+            "items": {
+              "$ref": "#/components/schemas/Reason"
+            }
+          },
+          "pin": {
+            "type": "string"
+          },
+          "providerTransactionId": {
+            "type": "string"
+          },
+          "fulfillmentTypeChanged": {
+            "type": "boolean",
+            "description": "Used during cart operations to inform app that the fulfillment has been changed in the cart",
+            "nullable": true,
+            "readOnly": true
+          },
+          "serialNumberRequired": {
+            "type": "boolean"
+          },
+          "originalOrderItemId": {
+            "type": "string",
+            "description": "When cart item ID is changed during edit order flow, this field hold the original order item ID as it was in the original order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "dateTimeSlot": {
+            "$ref": "#/components/schemas/DateTimeSlot"
+          },
+          "productAttributes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "CLEARANCE_ITEM"
+              ]
+            }
+          },
+          "virtual": {
+            "type": "boolean"
+          },
+          "returnRelated": {
+            "type": "boolean"
+          }
+        },
+        "description": "Products in this order with price adjustments. This list does not include the products that were returned",
+        "nullable": true
+      },
+      "OrderProduct": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string"
+          },
+          "variantGroupId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "salesEventId": {
+            "type": "string"
+          },
+          "hasGiftBox": {
+            "type": "boolean"
+          },
+          "productTax": {
+            "$ref": "#/components/schemas/ProductTax"
+          },
+          "orderStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "tax": {
+            "type": "number"
+          },
+          "valueAddedTax": {
+            "type": "number"
+          },
+          "orderItemId": {
+            "type": "string"
+          },
+          "parentOrderItemId": {
+            "type": "string"
+          },
+          "adjustedPrice": {
+            "type": "number"
+          },
+          "adjustedQuantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productTaxCode": {
+            "type": "string"
+          },
+          "itemProratedPrice": {
+            "type": "number"
+          },
+          "imageURL": {
+            "type": "string"
+          },
+          "subTotal": {
+            "type": "number"
+          },
+          "discount": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "store": {
+            "$ref": "#/components/schemas/Store"
+          },
+          "orderStatusText": {
+            "type": "string"
+          },
+          "itemDiscountAmount": {
+            "type": "number"
+          },
+          "overriddenPrice": {
+            "type": "number"
+          },
+          "size": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "itemStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "returnedDateTimeStamp": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "returnedDate": {
+            "type": "string"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomField"
+            }
+          },
+          "taxClass": {
+            "type": "string"
+          },
+          "totalAdjustedPrice": {
+            "type": "number"
+          },
+          "totalTaxablePrice": {
+            "type": "number"
+          },
+          "totalAdditionalCharge": {
+            "type": "number"
+          },
+          "totalItemDiscount": {
+            "type": "number"
+          },
+          "additionalCharges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdditionalCharge"
+            }
+          },
+          "priceAfterOrderDiscount": {
+            "type": "number"
+          },
+          "gtin": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "fulfillmentType": {
+            "type": "string",
+            "enum": [
+              "IN_STORE",
+              "ONLINE",
+              "MIXED"
+            ]
+          },
+          "fulfillmentSubType": {
+            "type": "string",
+            "enum": [
+              "DEFAULT",
+              "BOSS",
+              "BOPIS",
+              "TRY_AT_STORE",
+              "PICKUP_LATER"
+            ]
+          },
+          "exchangedForProductId": {
+            "type": "string"
+          },
+          "payWithInstallment": {
+            "type": "boolean"
+          },
+          "installmentEligibility": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "salesAssociateId": {
+            "type": "string"
+          },
+          "onlineInventoryLabel": {
+            "type": "string"
+          },
+          "onlineInventory": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "returnsEligibility": {
+            "type": "string",
+            "enum": [
+              "ELIGIBLE_FOR_RETURNS",
+              "EXPIRED_RETURNS",
+              "CANNOT_BE_RETURNED"
+            ]
+          },
+          "cyoDetails": {
+            "$ref": "#/components/schemas/CyoDetails"
+          },
+          "epc": {
+            "type": "string"
+          },
+          "tlogCustomProductAttributes": {
+            "type": "string"
+          },
+          "priceOverrideReasonCode": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "priceOverrideReason": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "masterProductId": {
+            "type": "string"
+          },
+          "subProductsTotal": {
+            "type": "number"
+          },
+          "subProductsLabel": {
+            "type": "string"
+          },
+          "readyDate": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "subProducts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          },
+          "productClass": {
+            "type": "string"
+          },
+          "serialNumber": {
+            "type": "string"
+          },
+          "productCondition": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "USED",
+              "REFURBISHED"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "description": "List of reasons pertaining to the actions performed on the item. Eg. Reason for price override applied on the item or reason for returning the item ",
+            "nullable": true,
+            "readOnly": true,
+            "items": {
+              "$ref": "#/components/schemas/Reason"
+            }
+          },
+          "pin": {
+            "type": "string"
+          },
+          "providerTransactionId": {
+            "type": "string"
+          },
+          "fulfillmentTypeChanged": {
+            "type": "boolean",
+            "description": "Used during cart operations to inform app that the fulfillment has been changed in the cart",
+            "nullable": true,
+            "readOnly": true
+          },
+          "serialNumberRequired": {
+            "type": "boolean"
+          },
+          "originalOrderItemId": {
+            "type": "string",
+            "description": "When cart item ID is changed during edit order flow, this field hold the original order item ID as it was in the original order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "dateTimeSlot": {
+            "$ref": "#/components/schemas/DateTimeSlot"
+          },
+          "productAttributes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "CLEARANCE_ITEM"
+              ]
+            }
+          },
+          "priceAdjustments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceAdjustment"
+            }
+          },
+          "virtual": {
+            "type": "boolean"
+          },
+          "returnRelated": {
+            "type": "boolean"
+          }
+        },
+        "description": "Products in this order with price adjustments. This list does not include the products that were returned",
+        "nullable": true
+      },
+      "ReturnedProduct": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string"
+          },
+          "variantGroupId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "salesEventId": {
+            "type": "string"
+          },
+          "hasGiftBox": {
+            "type": "boolean"
+          },
+          "productTax": {
+            "$ref": "#/components/schemas/ProductTax"
+          },
+          "orderStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "tax": {
+            "type": "number"
+          },
+          "valueAddedTax": {
+            "type": "number"
+          },
+          "orderItemId": {
+            "type": "string"
+          },
+          "parentOrderItemId": {
+            "type": "string"
+          },
+          "adjustedPrice": {
+            "type": "number"
+          },
+          "adjustedQuantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productTaxCode": {
+            "type": "string"
+          },
+          "itemProratedPrice": {
+            "type": "number"
+          },
+          "imageURL": {
+            "type": "string"
+          },
+          "subTotal": {
+            "type": "number"
+          },
+          "discount": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "store": {
+            "$ref": "#/components/schemas/Store"
+          },
+          "orderStatusText": {
+            "type": "string"
+          },
+          "itemDiscountAmount": {
+            "type": "number"
+          },
+          "overriddenPrice": {
+            "type": "number"
+          },
+          "size": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "itemStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PROCESSING",
+              "PARTIALLY_SHIPPED",
+              "SHIPPED",
+              "CANCELED",
+              "COMPLETED",
+              "FAILED",
+              "RETURNED",
+              "PARTIALLY_REFUNDED",
+              "REWARD",
+              "PENDING",
+              "UNKNOWN",
+              "READY",
+              "PACK",
+              "PICKED",
+              "DELIVERED",
+              "CREATED",
+              "CANCELLED_WITH_REFUND",
+              "UNAVAILABLE",
+              "DAMAGED",
+              "EXCHANGED",
+              "PARTIALLY_EXCHANGED",
+              "RECREATED",
+              "FULFILLED"
+            ]
+          },
+          "returnedDateTimeStamp": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "returnedDate": {
+            "type": "string"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomField"
+            }
+          },
+          "taxClass": {
+            "type": "string"
+          },
+          "totalAdjustedPrice": {
+            "type": "number"
+          },
+          "totalTaxablePrice": {
+            "type": "number"
+          },
+          "totalAdditionalCharge": {
+            "type": "number"
+          },
+          "totalItemDiscount": {
+            "type": "number"
+          },
+          "additionalCharges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdditionalCharge"
+            }
+          },
+          "priceAfterOrderDiscount": {
+            "type": "number"
+          },
+          "gtin": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "fulfillmentType": {
+            "type": "string",
+            "enum": [
+              "IN_STORE",
+              "ONLINE",
+              "MIXED"
+            ]
+          },
+          "fulfillmentSubType": {
+            "type": "string",
+            "enum": [
+              "DEFAULT",
+              "BOSS",
+              "BOPIS",
+              "TRY_AT_STORE",
+              "PICKUP_LATER"
+            ]
+          },
+          "exchangedForProductId": {
+            "type": "string"
+          },
+          "payWithInstallment": {
+            "type": "boolean"
+          },
+          "installmentEligibility": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "salesAssociateId": {
+            "type": "string"
+          },
+          "onlineInventoryLabel": {
+            "type": "string"
+          },
+          "onlineInventory": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "returnsEligibility": {
+            "type": "string",
+            "enum": [
+              "ELIGIBLE_FOR_RETURNS",
+              "EXPIRED_RETURNS",
+              "CANNOT_BE_RETURNED"
+            ]
+          },
+          "cyoDetails": {
+            "$ref": "#/components/schemas/CyoDetails"
+          },
+          "epc": {
+            "type": "string"
+          },
+          "tlogCustomProductAttributes": {
+            "type": "string"
+          },
+          "priceOverrideReasonCode": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "priceOverrideReason": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "masterProductId": {
+            "type": "string"
+          },
+          "subProductsTotal": {
+            "type": "number"
+          },
+          "subProductsLabel": {
+            "type": "string"
+          },
+          "readyDate": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "subProducts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          },
+          "productClass": {
+            "type": "string"
+          },
+          "serialNumber": {
+            "type": "string"
+          },
+          "productCondition": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "USED",
+              "REFURBISHED"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "description": "List of reasons pertaining to the actions performed on the item. Eg. Reason for price override applied on the item or reason for returning the item ",
+            "nullable": true,
+            "readOnly": true,
+            "items": {
+              "$ref": "#/components/schemas/Reason"
+            }
+          },
+          "pin": {
+            "type": "string"
+          },
+          "providerTransactionId": {
+            "type": "string"
+          },
+          "fulfillmentTypeChanged": {
+            "type": "boolean",
+            "description": "Used during cart operations to inform app that the fulfillment has been changed in the cart",
+            "nullable": true,
+            "readOnly": true
+          },
+          "serialNumberRequired": {
+            "type": "boolean"
+          },
+          "originalOrderItemId": {
+            "type": "string",
+            "description": "When cart item ID is changed during edit order flow, this field hold the original order item ID as it was in the original order",
+            "nullable": true,
+            "readOnly": true
+          },
+          "dateTimeSlot": {
+            "$ref": "#/components/schemas/DateTimeSlot"
+          },
+          "productAttributes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "CLEARANCE_ITEM"
+              ]
+            }
+          },
+          "refundRequestId": {
+            "type": "string"
+          },
+          "refundDate": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "exchangedForOrderId": {
+            "type": "string"
+          },
+          "virtual": {
+            "type": "boolean"
+          },
+          "returnRelated": {
+            "type": "boolean"
+          }
+        },
+        "description": "Products that were not yet returned",
+        "nullable": true
+      },
+      "OrderTaxRate": {
+        "type": "object",
+        "properties": {
+          "countryCode": {
+            "type": "string",
+            "description": "Country Code"
+          },
+          "state": {
+            "type": "string",
+            "description": "State"
+          },
+          "postalCode": {
+            "type": "string",
+            "description": "Postal Code"
+          },
+          "taxType": {
+            "type": "string",
+            "description": "Indicates Tax type - COUNTRY, CITY, STATE etc",
+            "enum": [
+              "CLASS",
+              "CITY",
+              "DISTRICT",
+              "COUNTY",
+              "STATE",
+              "COUNTRY",
+              "ITEM_OVERRIDE",
+              "STORE_OVERRIDE"
+            ]
+          },
+          "taxRate": {
+            "type": "number",
+            "description": "% tax/vat rate",
+            "format": "float"
+          },
+          "taxClass": {
+            "type": "string",
+            "description": "Tax bucket"
+          },
+          "taxCode": {
+            "type": "string",
+            "description": "Tax Identifier"
+          },
+          "taxAmount": {
+            "type": "number",
+            "description": "Sum of tax amounts of a particular type (group of TaxType, TaxClass, TaxName, TaxRate) at the time of purchase."
+          },
+          "taxName": {
+            "type": "string",
+            "description": "Tax Name e.g. Jurisdiction, MTA, BTW Hoog, BTW Laag, etc"
+          },
+          "displayTaxName": {
+            "type": "string",
+            "description": "Display Tax Name e.g. Jurisdiction - 7.25%, BTW Hoog - 21%, BTW Laag - 9%, etc"
+          },
+          "returnedTaxAmount": {
+            "type": "number",
+            "description": "sum of returned tax amounts of a particular type(group of TaxType, TaxClass, TaxName, TaxRate) across returned products. ="
+          },
+          "remainingTaxAmount": {
+            "type": "number",
+            "description": "sum of tax amounts of a particular type(group of TaxType, TaxClass, TaxName, TaxRate) across non-returned products."
+          }
+        }
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string"
+          },
+          "alternateCustomerId": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "salutation": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "secondName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "suffix": {
+            "type": "string"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "birthday": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "Male",
+              "Female",
+              "Neutral",
+              "Unknown"
+            ]
+          },
+          "companyName": {
+            "type": "string"
+          },
+          "phoneHome": {
+            "type": "string"
+          },
+          "phoneMobile": {
+            "type": "string"
+          },
+          "phoneBusiness": {
+            "type": "string"
+          },
+          "fax": {
+            "type": "string"
+          }
+        },
+        "description": "Profile for the customer. While sending order into PredictSpring system, only customerId from the profile object will be used.",
+        "nullable": true
+      },
+      "OrderShipment": {
+        "type": "object",
+        "properties": {
+          "trackingNumber": {
+            "type": "string",
+            "description": "Shipment tracking number. Mandatory"
+          },
+          "trackingLink": {
+            "type": "string",
+            "description": "Shipment tracking URL. Optional"
+          },
+          "shippingName": {
+            "type": "string",
+            "description": "Shipping name. Optional",
+            "example": "Express shipping"
+          },
+          "shippingDescription": {
+            "type": "string",
+            "description": "Shipping description. Optional",
+            "example": "Express shipping arrives in 2-3 business days"
+          },
+          "shippingCarrier": {
+            "type": "string",
+            "description": "Shipping carrier code. Mandatory",
+            "example": "UPS"
+          },
+          "shippingServiceLevel": {
+            "type": "string",
+            "description": "Shipping service level. Optional",
+            "example": "3"
+          },
+          "items": {
+            "type": "array",
+            "description": "List of items in this shipment.",
+            "items": {
+              "$ref": "#/components/schemas/DeliveryItem"
+            }
+          },
+          "shippedOn": {
+            "type": "string",
+            "description": "Date when shipment was dispatched.",
+            "format": "date-time"
+          },
+          "deliveredOn": {
+            "type": "string",
+            "description": "Date when shipment was delivered.",
+            "format": "date-time"
+          },
+          "shipmentId": {
+            "type": "string",
+            "description": "Logical ID for the shipment. This field could be composed by combining shipping carrier and tracking number - i.e. ShippingCarrier-TrackingNumber."
+          },
+          "fulfilledFromLocationId": {
+            "type": "string",
+            "description": "An identifier for where the Shipment is sent from. Example: From Store ID in case of BOSS/BOFIS, Warehouse ID in case shipment from warehouse. It could be FSL ID in case of shipment from Forward Stocking Location."
+          }
+        },
+        "description": "Shipments related to this order if any.",
+        "nullable": true
+      },
+      "Reason": {
+        "required": [
+          "reasonCode",
+          "reasonCodeType"
+        ],
+        "type": "object",
+        "properties": {
+          "reasonCodeType": {
+            "maxLength": 64,
+            "type": "string",
+            "description": "Type for reason codes. It could be either of TRANSACTION_DISCOUNT,PRICE_OVERRIDE,RETURNS,BANK_DEPOSIT,TILL_RECONCILIATION,TILL_CASH_OUT",
+            "enum": [
+              "TRANSACTION_DISCOUNT",
+              "PRICE_OVERRIDE",
+              "RETURNS",
+              "BANK_DEPOSIT_VARIANCE",
+              "TILL_RECONCILIATION_VARIANCE",
+              "TILL_CASH_OUT",
+              "EXCLUDE_ITEM_FROM_CYCLE_COUNT",
+              "INVENTORY_ADJUSTMENT",
+              "SAFE_FLOAT_UPDATE",
+              "TILL_FLOAT_UPDATE",
+              "EXPENSE_UPDATE",
+              "MISC_EXPENSE1_UPDATE",
+              "MISC_EXPENSE2_UPDATE",
+              "INVENTORY_ITEM_RECEIVE_MISMATCH"
+            ]
+          },
+          "reasonCode": {
+            "maxLength": 64,
+            "type": "string",
+            "description": "Reason code"
+          },
+          "reasonText": {
+            "maxLength": 256,
+            "type": "string",
+            "description": "Reason text",
+            "nullable": true
+          }
+        },
+        "description": "Reason for inventory adjustment",
+        "nullable": true,
+        "readOnly": true
+      },
+      "ProductPriceAdjustment": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string"
+          },
+          "basePrice": {
+            "type": "string"
+          },
+          "adjustedPrice": {
+            "type": "string"
+          },
+          "priceAdjustments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceAdjustment"
+            }
+          },
+          "orderItemId": {
+            "type": "string"
+          },
+          "priceAfterItemDiscount": {
+            "type": "number"
+          },
+          "priceAfterOrderDiscount": {
+            "type": "number"
+          },
+          "totalAdjustedPrice": {
+            "type": "number"
+          },
+          "totalTaxablePrice": {
+            "type": "number"
+          },
+          "totalAddtionalCharge": {
+            "type": "number"
+          },
+          "totalItemDiscount": {
+            "type": "number"
+          },
+          "fulfillmentType": {
+            "type": "string",
+            "enum": [
+              "IN_STORE",
+              "ONLINE",
+              "MIXED"
+            ]
+          },
+          "fulfillmentSubType": {
+            "type": "string",
+            "enum": [
+              "DEFAULT",
+              "BOSS",
+              "BOPIS",
+              "TRY_AT_STORE",
+              "PICKUP_LATER"
+            ]
+          },
+          "additionalCharges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdditionalCharge"
+            }
+          }
+        },
+        "description": "Convenience object that consolidates all item level price adjustments and presents at order level"
+      },
+      "PaymentReceiptLine": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "display": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductTax": {
+        "type": "object",
+        "properties": {
+          "classTax": {
+            "type": "number"
+          },
+          "cityTax": {
+            "type": "number"
+          },
+          "countyTax": {
+            "type": "number"
+          },
+          "districtTax": {
+            "type": "number"
+          },
+          "stateTax": {
+            "type": "number"
+          },
+          "totalTax": {
+            "type": "number"
+          },
+          "taxRates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductTaxRate"
+            }
+          },
+          "vatRates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductTaxRate"
+            }
+          },
+          "valueAddedTax": {
+            "type": "number"
+          }
+        }
+      },
+      "Store": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "addressLine1": {
+            "type": "string"
+          },
+          "addressLine2": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "homePage": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "mainPhone": {
+            "type": "string"
+          },
+          "fax": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "distance": {
+            "type": "number",
+            "format": "double"
+          },
+          "storeDescription": {
+            "type": "string"
+          },
+          "storeImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "storeType": {
+            "type": "string",
+            "enum": [
+              "Regular",
+              "Popup",
+              "Outlet",
+              "Ecomm"
+            ]
+          },
+          "allowTryAtStore": {
+            "type": "boolean"
+          },
+          "productScanCodeType": {
+            "type": "string"
+          }
+        }
+      },
+      "CustomField": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "AdditionalCharge": {
+        "type": "object",
+        "properties": {
+          "display": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "taxable": {
+            "type": "boolean"
+          },
+          "linkedProductId": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CyoDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "Fluid",
+              "ALTERATIONS",
+              "DYO",
+              "SPECIAL_ITEM"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "string"
+          },
+          "customizeUrl": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomField"
+            }
+          },
+          "price": {
+            "type": "number"
+          }
+        }
+      },
+      "DateTimeSlot": {
+        "type": "object",
+        "properties": {
+          "availableDate": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "selectedTimeSlot": {
+            "type": "string"
+          },
+          "availableTimeSlots": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PriceAdjustment": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "adjustment": {
+            "type": "string"
+          },
+          "discount": {
+            "$ref": "#/components/schemas/Discount"
+          },
+          "price": {
+            "type": "number"
+          },
+          "id": {
+            "type": "string"
+          },
+          "priceAdjustmentType": {
+            "type": "string",
+            "enum": [
+              "PRICE_OVERRIDE",
+              "PROMOTION",
+              "FEES",
+              "REWARDS",
+              "TRANSACTION_DISCOUNT"
+            ]
+          },
+          "taxable": {
+            "type": "boolean"
+          },
+          "auto": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "reasonCode": {
+            "type": "string",
+            "description": "DEPRECATED - Use 'reasons' instead",
+            "deprecated": true
+          },
+          "fulfillmentType": {
+            "type": "string",
+            "enum": [
+              "IN_STORE",
+              "ONLINE",
+              "MIXED"
+            ]
+          },
+          "promoCode": {
+            "type": "string"
+          },
+          "merchantPromotionId": {
+            "type": "string"
+          },
+          "reasons": {
+            "type": "array",
+            "description": "List of reasons pertaining the price adjument",
+            "nullable": true,
+            "readOnly": true,
+            "items": {
+              "$ref": "#/components/schemas/Reason"
+            }
+          },
+          "reasonText": {
+            "type": "string"
+          },
+          "adjustmentType": {
+            "type": "string",
+            "enum": [
+              "PRICE_OVERRIDE",
+              "PROMOTION",
+              "FEES",
+              "REWARDS",
+              "TRANSACTION_DISCOUNT"
+            ]
+          },
+          "adjustmentAmount": {
+            "type": "number"
+          },
+          "referenceAdjustmentId": {
+            "type": "string"
+          },
+          "referenceAdjustmentID": {
+            "type": "string",
+            "writeOnly": true
+          }
+        }
+      },
+      "DeliveryItem": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "description": "Product ID"
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Number of items",
+            "format": "int32"
+          }
+        },
+        "description": "List of items in this shipment."
+      },
+      "ProductTaxRate": {
+        "type": "object",
+        "properties": {
+          "countryCode": {
+            "type": "string",
+            "description": "Country Code"
+          },
+          "state": {
+            "type": "string",
+            "description": "State"
+          },
+          "postalCode": {
+            "type": "string",
+            "description": "Postal Code"
+          },
+          "taxType": {
+            "type": "string",
+            "description": "Indicates Tax type - COUNTRY, CITY, STATE etc",
+            "enum": [
+              "CLASS",
+              "CITY",
+              "DISTRICT",
+              "COUNTY",
+              "STATE",
+              "COUNTRY",
+              "ITEM_OVERRIDE",
+              "STORE_OVERRIDE"
+            ]
+          },
+          "taxRate": {
+            "type": "number",
+            "description": "% tax/vat rate",
+            "format": "float"
+          },
+          "taxClass": {
+            "type": "string",
+            "description": "Tax bucket"
+          },
+          "taxCode": {
+            "type": "string",
+            "description": "Tax Identifier"
+          },
+          "taxAmount": {
+            "type": "number",
+            "description": "Sum of tax amounts of a particular type (group of TaxType, TaxClass, TaxName, TaxRate) at the time of purchase."
+          },
+          "perUnitTaxAmount": {
+            "type": "number"
+          },
+          "taxName": {
+            "type": "string",
+            "description": "Tax Name e.g. Jurisdiction, MTA, BTW Hoog, BTW Laag, etc"
+          },
+          "displayTaxName": {
+            "type": "string",
+            "description": "Display Tax Name e.g. Jurisdiction - 7.25%, BTW Hoog - 21%, BTW Laag - 9%, etc"
+          }
+        }
+      },
+      "Discount": {
+        "type": "object",
+        "properties": {
+          "discountType": {
+            "type": "string",
+            "enum": [
+              "AMOUNT",
+              "PERCENT"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
